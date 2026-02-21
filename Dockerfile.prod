@@ -1,0 +1,23 @@
+﻿FROM php:8.2-fpm
+
+WORKDIR /app
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+     git unzip libpq-dev \
+  && docker-php-ext-install pdo pdo_pgsql pdo_mysql \
+  && rm -rf /var/lib/apt/lists/*
+
+COPY composer.json composer.lock* /app/
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+  && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
+  && rm composer-setup.php \
+  && composer install --no-dev --no-interaction --no-progress --prefer-dist || true
+
+COPY . /app
+
+RUN mkdir -p /app/uploads/driver_docs \
+  && chown -R www-data:www-data /app/uploads \
+  && chmod -R 775 /app/uploads
+
+CMD ["php-fpm", "-F"]

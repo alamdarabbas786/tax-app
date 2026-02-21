@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "Airport_taxi Driver",
+    "slug": "airport-taxi-driver",
+    "version": "1.0.0",
+    "sdkVersion": "54.0.0",
+    "android": {
+      "package": "com.quickgo.driver",
+      "googleServicesFile": "./google-services.json",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAvDdNGU6jdSBQHHSVP2As1Xc4n4tg0Ghc"
+        }
+      },
+      "notification": {
+        "sounds": [
+          "./assets/sounds/ride_request.wav"
+        ]
+      }
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}

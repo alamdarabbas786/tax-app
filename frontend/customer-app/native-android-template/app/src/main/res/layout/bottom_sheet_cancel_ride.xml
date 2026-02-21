@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Why do you want to cancel?"
+        android:textColor="#0F172A"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <RadioGroup
+        android:id="@+id/radioReasons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp">
+
+        <RadioButton
+            android:id="@+id/reasonDelay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Driver is taking too long" />
+
+        <RadioButton
+            android:id="@+id/reasonPlans"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Change of plans" />
+
+        <RadioButton
+            android:id="@+id/reasonMistake"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Booked by mistake" />
+
+        <RadioButton
+            android:id="@+id/reasonOtherRide"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Found another ride" />
+
+        <RadioButton
+            android:id="@+id/reasonOther"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Other" />
+    </RadioGroup>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSubmitCancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Confirm Cancel"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        app:backgroundTint="#DC2626"
+        xmlns:app="http://schemas.android.com/apk/res-auto" />
+
+</LinearLayout>

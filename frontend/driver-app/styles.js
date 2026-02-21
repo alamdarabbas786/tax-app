@@ -1,0 +1,228 @@
+import { StyleSheet } from 'react-native';
+
+export const styles = StyleSheet.create({
+  formContainer: { padding: 20, backgroundColor: '#ffffff', minHeight: '100%' },
+  title: { color: '#111827', fontSize: 24, fontWeight: '800', marginBottom: 12 },
+  label: { color: '#6b7280', marginTop: 10, marginBottom: 6, fontSize: 12, fontWeight: '700', letterSpacing: 0.2 },
+  input: { backgroundColor: '#f9fafb', color: '#111827', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#e5e7eb' },
+  textArea: { minHeight: 90, textAlignVertical: 'top' },
+  primaryBtn: { backgroundColor: '#FFD100', paddingVertical: 14, borderRadius: 14, alignItems: 'center', marginTop: 14 },
+  primaryBtnText: { color: '#111827', fontWeight: '800', fontSize: 16 },
+  secondaryBtn: { backgroundColor: '#111827', paddingVertical: 12, borderRadius: 12, alignItems: 'center', marginTop: 10 },
+  secondaryBtnText: { color: '#ffffff', fontWeight: '700' },
+  ghostBtn: { borderWidth: 1, borderColor: '#e5e7eb', paddingVertical: 12, borderRadius: 12, alignItems: 'center', marginTop: 10 },
+  ghostBtnText: { color: '#111827', fontWeight: '700' },
+  uploadBtn: { backgroundColor: '#f3f4f6', paddingVertical: 12, borderRadius: 12, alignItems: 'center', marginTop: 8, borderWidth: 1, borderColor: '#e5e7eb' , zIndex: 2, elevation: 2},
+  uploadText: { color: '#111827', fontWeight: '700' },
+  checkbox: { flexDirection: 'row', alignItems: 'center', marginTop: 12 },
+  checkboxBox: { width: 18, height: 18, borderWidth: 1, borderColor: '#9ca3af', marginRight: 8, borderRadius: 4 },
+  checkboxBoxActive: { backgroundColor: '#22c55e', borderColor: '#22c55e' },
+  checkboxText: { color: '#111827' },
+  error: { color: '#ef4444', marginTop: 6 },
+  linkBtn: { marginTop: 12, alignItems: 'center' },
+  linkText: { color: '#111827', fontWeight: '700' },
+  card: { backgroundColor: '#ffffff', padding: 14, borderRadius: 14, marginVertical: 8, borderWidth: 1, borderColor: '#f3f4f6', shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 8, elevation: 2 },
+  cardTitle: { color: '#111827', fontWeight: '800', marginBottom: 4, fontSize: 16 },
+  cardLine: { color: '#4b5563', marginTop: 4 },
+  rowInline: { flexDirection: 'row', justifyContent: 'space-between', gap: 10, marginTop: 10 },
+  rejectBtn: { backgroundColor: '#ef4444', paddingVertical: 12, borderRadius: 12, alignItems: 'center', flex: 1 },
+  rejectText: { color: '#ffffff', fontWeight: '800' },
+  acceptBtn: { backgroundColor: '#22c55e', paddingVertical: 12, borderRadius: 12, alignItems: 'center', flex: 1 },
+  acceptText: { color: '#ffffff', fontWeight: '800' },
+  toggleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  toggleBtn: { paddingVertical: 10, paddingHorizontal: 16, borderRadius: 24 },
+  toggleOn: { backgroundColor: '#22c55e' },
+  toggleOff: { backgroundColor: '#e5e7eb' },
+  toggleText: { color: '#111827', fontWeight: '800' },
+  timeline: { marginTop: 12 },
+  timelineRow: { flexDirection: 'row', alignItems: 'center', marginVertical: 6 },
+  timelineDot: { width: 10, height: 10, borderRadius: 5, borderWidth: 2, borderColor: '#d1d5db', marginRight: 10 },
+  timelineDotActive: { backgroundColor: '#22c55e', borderColor: '#22c55e' },
+  timelineText: { color: '#9ca3af' },
+  timelineTextActive: { color: '#111827', fontWeight: '700' },
+  screen: { flex: 1, backgroundColor: '#ffffff' },
+  map: { flex: 1 },
+  vehicleMarker: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: '#2563EB',
+    borderWidth: 2,
+    borderColor: '#ffffff',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  sheet: { backgroundColor: '#ffffff', padding: 16, borderTopLeftRadius: 20, borderTopRightRadius: 20, borderWidth: 1, borderColor: '#f3f4f6' },
+  sheetTitle: { color: '#111827', fontSize: 18, fontWeight: '800', marginBottom: 8 },
+  statusLine: { color: '#4b5563', marginTop: 6 },
+  segmentRow: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 8 },
+  segmentBtn: { backgroundColor: '#f3f4f6', paddingVertical: 8, paddingHorizontal: 12, borderRadius: 16, marginRight: 8, marginBottom: 8 },
+  segmentBtnActive: { backgroundColor: '#FFD100' },
+  segmentText: { color: '#111827', fontWeight: '600' },
+  segmentTextActive: { color: '#111827', fontWeight: '800' },
+  headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  badge: { paddingVertical: 4, paddingHorizontal: 10, borderRadius: 999, backgroundColor: '#f3f4f6' },
+  badgeText: { color: '#111827', fontWeight: '700', fontSize: 11 },
+  floatingBtn: { position: 'absolute', right: 16, width: 46, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center', backgroundColor: '#111827' },
+  floatingBtnText: { color: '#ffffff', fontWeight: '800' },
+  headerMenuBtn: { backgroundColor: '#111827', borderRadius: 999, paddingVertical: 6, paddingHorizontal: 12 },
+  headerMenuBtnText: { color: '#ffffff', fontWeight: '700', fontSize: 12 },
+  drawerOverlay: { flex: 1, flexDirection: 'row', backgroundColor: 'rgba(0,0,0,0.22)' },
+  drawerBackdrop: { flex: 1 },
+  drawerPanel: { width: 250, backgroundColor: '#ffffff', paddingTop: 56, paddingHorizontal: 14, borderLeftWidth: 1, borderLeftColor: '#e5e7eb' },
+  drawerTitle: { color: '#111827', fontSize: 18, fontWeight: '800', marginBottom: 14 },
+  drawerItem: { paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#f3f4f6' },
+  drawerItemText: { color: '#111827', fontWeight: '700', fontSize: 14 },
+  mapOverlay: { position: 'absolute', left: 16, right: 16, bottom: 12, maxHeight: '70%' },
+  navBanner: {
+    position: 'absolute',
+    top: 24,
+    left: 14,
+    right: 14,
+    backgroundColor: '#111827',
+    borderRadius: 14,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    opacity: 0.95
+  },
+  navBannerTitle: { color: '#ffffff', fontWeight: '800', fontSize: 14 },
+  navBannerLine: { color: '#f9fafb', marginTop: 4, fontSize: 12, fontWeight: '600' },
+  liveRideTopCard: {
+    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    elevation: 6,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 8
+  },
+  liveRideTopTitle: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: '800',
+    textAlign: 'center',
+    marginTop: 2
+  },
+  liveRideTopStatus: {
+    color: '#E5E7EB',
+    fontSize: 13,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginTop: 4
+  },
+  liveRideBottomCard: {
+    position: 'absolute',
+    left: 12,
+    right: 12,
+    bottom: 16,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    padding: 16,
+    elevation: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.18,
+    shadowRadius: 10
+  },
+  cancelRideBtn: {
+    backgroundColor: '#DC2626',
+    width: '100%',
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 12
+  },
+  cancelRideBtnText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '800'
+  },
+  topQuickBtn: {
+    width: '100%',
+    marginTop: 10,
+    paddingVertical: 11,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1
+  },
+  topQuickBtnRecenter: {
+    backgroundColor: '#E0F2FE',
+    borderColor: '#93C5FD'
+  },
+  topQuickBtnNav: {
+    backgroundColor: '#DCFCE7',
+    borderColor: '#86EFAC'
+  },
+  topQuickBtnVoice: {
+    backgroundColor: '#FEF3C7',
+    borderColor: '#FDE68A',
+    marginTop: 8
+  },
+  topQuickBtnText: {
+    color: '#0F172A',
+    fontSize: 13,
+    fontWeight: '800'
+  },
+  navProgressTrack: {
+    marginTop: 10,
+    height: 8,
+    borderRadius: 8,
+    backgroundColor: '#E5E7EB',
+    overflow: 'hidden'
+  },
+  navProgressFill: {
+    height: '100%',
+    backgroundColor: '#16A34A',
+    borderRadius: 8
+  },
+  swipeCard: {
+    marginTop: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    padding: 10,
+    backgroundColor: '#fffef3'
+  },
+  swipeHint: { color: '#111827', fontWeight: '700', marginBottom: 8 },
+  swipeTrack: {
+    width: 280,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#111827',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    alignSelf: 'center'
+  },
+  swipeTrackText: { color: '#ffffff', textAlign: 'center', fontWeight: '700' },
+  swipeKnob: {
+    position: 'absolute',
+    left: 4,
+    top: 4,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: '#FFD100',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  swipeKnobText: { color: '#111827', fontWeight: '900', fontSize: 13 },
+  dashboardScroll: { width: '100%' },
+  dashboardScrollContent: { paddingBottom: 24 },
+  liveRideSheet: {
+    position: 'absolute',
+    left: 12,
+    right: 12,
+    top: 88,
+    borderRadius: 18,
+    shadowColor: '#000',
+    shadowOpacity: 0.16,
+    shadowRadius: 10,
+    elevation: 8
+  },
+  toggleTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
+  statusText: { color: '#4b5563', marginTop: 2, fontWeight: '600' }
+});
+

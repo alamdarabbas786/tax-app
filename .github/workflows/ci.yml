@@ -1,0 +1,146 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: airport_taxi
+          MYSQL_USER: appuser
+          MYSQL_PASSWORD: AppPass123!
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uappuser -pAppPass123!"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=12
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=12
+    env:
+      MYSQL_DSN: mysql:host=127.0.0.1;port=3306;dbname=airport_taxi;charset=utf8mb4
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: AppPass123!
+      REDIS_URL: redis://127.0.0.1:6379
+      APP_ENV: test
+      TEST_BASE_URL: http://127.0.0.1:3000
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          tools: composer
+          extensions: pdo_mysql, curl
+
+      - name: Install backend deps
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Run DB migrations
+        run: |
+          cat <<'PHP' > /tmp/apply_sql.php
+          <?php
+          $dsn = getenv('MYSQL_DSN');
+          $user = getenv('MYSQL_USER');
+          $pass = getenv('MYSQL_PASSWORD');
+          $pdo = new PDO($dsn, $user, $pass, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+          foreach ([
+              'db/mysql/018_rapido_core_api.sql',
+              'db/mysql/020_realtime_notifications.sql',
+              'db/mysql/021_notification_system_hardening.sql',
+              'db/mysql/022_schema_unification.sql'
+          ] as $file) {
+              $sql = file_get_contents($file);
+              if ($sql === false) {
+                  throw new RuntimeException("Unable to read $file");
+              }
+              $pdo->exec($sql);
+          }
+          echo "SQL migrations applied\n";
+          PHP
+          php /tmp/apply_sql.php
+
+      - name: Start API server
+        run: php -S 127.0.0.1:3000 -t public public/router.php > /tmp/php-server.log 2>&1 &
+
+      - name: Wait for health endpoint
+        run: |
+          for i in {1..30}; do
+            code=$(curl -s -o /tmp/health.json -w "%{http_code}" http://127.0.0.1:3000/health || true)
+            if [ "$code" = "200" ] || [ "$code" = "503" ]; then
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "Health endpoint did not come up in time"
+          cat /tmp/php-server.log || true
+          exit 1
+
+      - name: Backend unit tests
+        run: composer test
+
+      - name: Backend integration tests
+        run: composer test:integration
+
+      - name: Print API server log on failure
+        if: failure()
+        run: cat /tmp/php-server.log || true
+
+  driver-frontend-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend/driver-app
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install deps
+        run: npm install --no-audit --no-fund
+
+      - name: Run Jest
+        run: npm test
+
+  websocket-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: scripts/realtime
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install deps
+        run: npm install --no-audit --no-fund
+
+      - name: Run websocket tests
+        run: npm test

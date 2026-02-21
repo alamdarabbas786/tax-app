@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1089963609955",
+    "project_id": "taxi-app-eca3a",
+    "storage_bucket": "taxi-app-eca3a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1089963609955:android:757dfd8c9f2eb55822cd56",
+        "android_client_info": {
+          "package_name": "com.quickgo.customer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD2Nv26jTqqIV9_popmx_4i2CZJfwf6I-c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1089963609955:android:3206d5bf25f423d022cd56",
+        "android_client_info": {
+          "package_name": "com.quickgo.driver"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD2Nv26jTqqIV9_popmx_4i2CZJfwf6I-c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,23 @@
+﻿# Node
+node_modules/
+
+# PHP
+/vendor/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Env
+.env
+
+# Uploads
+/uploads/
+
+# OS
+.DS_Store
+Thumbs.db
+taxi-app-eca3a-firebase-adminsdk-fbsvc-4b89fb4540.json
+
+taxi-app-eca3a-firebase-adminsdk-fbsvc-4b89fb4540.json

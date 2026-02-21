@@ -1,0 +1,17 @@
+{
+  "expo": {
+    "name": "Airport_taxi Customer",
+    "slug": "airport-taxi-customer",
+    "version": "1.0.0",
+    "sdkVersion": "54.0.0",
+    "android": {
+      "package": "com.quickgo.customer",
+      "googleServicesFile": "./google-services.json",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyB_WRLSV9g3v5XBF6eUZBy_Ig9X0w_4-_g"
+        }
+      }
+    }
+  }
+}

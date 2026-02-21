@@ -1,0 +1,7 @@
+﻿/vendor
+/node_modules
+/.git
+/.idea
+/.vscode
+/.env
+/.env.docker
