@@ -4,8 +4,8 @@ WORKDIR /app
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
-     git unzip libpq-dev \
-  && docker-php-ext-install pdo pdo_pgsql \
+     git unzip libpq-dev libmysqlclient-dev \
+  && docker-php-ext-install pdo pdo_pgsql pdo_mysql \
   && rm -rf /var/lib/apt/lists/*
 
 COPY composer.json composer.lock* /app/
