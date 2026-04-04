@@ -1,13 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { apiGet } from '../apiClient';
+import { API_BASE } from '../config';
 
 export default function RideCompletedScreen({ navigation, route, apiBase }) {
   const ride = route.params?.ride;
   const token = route.params?.token || '';
   const driver = route.params?.driver || null;
   const summary = route.params?.summary || {};
-  const resolvedBase = apiBase || 'http://192.168.1.44:3000';
+  const resolvedBase = apiBase || API_BASE;
   const isOnlinePayment = useMemo(() => {
     const mode = String(ride?.payment_mode || ride?.payment_method || '').toLowerCase().trim();
     return mode === 'online';

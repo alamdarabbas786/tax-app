@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { apiGet } from '../apiClient';
+import { API_BASE } from '../config';
 
 export default function PaymentCheckoutScreen({ navigation, route }) {
   const {
@@ -14,7 +15,7 @@ export default function PaymentCheckoutScreen({ navigation, route }) {
     paymentUrl,
   } = route?.params || {};
 
-  const resolvedBase = apiBase || 'http://192.168.1.44:3000';
+  const resolvedBase = apiBase || API_BASE;
   const authToken = String(token || session?.token || '').trim();
   const url = useMemo(() => {
     const raw = String(paymentUrl || '').trim();

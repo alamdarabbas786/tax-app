@@ -1,0 +1,14 @@
+2026-04-04 17:49:05 0 [Note] Using unique option prefix 'key_buffer' is error-prone and can break in the future. Please use the full name 'key_buffer_size' instead.
+2026-04-04 17:49:05 0 [Warning] Can't create test file 'C:\xampp\mysql\data\Sami.lower-test' (Errcode: 13 "Permission denied")
+C:\xampp\mysql\bin\mysqld.exe: Can't create file '.\mysql_error.log' (errno: 13 "Permission denied")
+2026-04-04 17:49:05 0 [Note] Starting MariaDB 10.4.32-MariaDB source revision c4143f909528e3fab0677a28631d10389354c491 as process 11372
+2026-04-04 17:49:05 0 [ERROR] mysqld.exe: File 'C:\xampp\mysql\data\aria_log_control' not found (Errcode: 13 "Permission denied")
+2026-04-04 17:49:05 0 [ERROR] mysqld.exe: Got error 'Can't open file' when trying to use aria control file 'C:\xampp\mysql\data\aria_log_control'
+2026-04-04 17:49:05 0 [ERROR] Plugin 'Aria' registration as a STORAGE ENGINE failed.
+2026-04-04 17:49:05 0 [ERROR] InnoDB: The innodb_system data file 'ibdata1' must be writable
+2026-04-04 17:49:05 0 [ERROR] InnoDB: The innodb_system data file 'ibdata1' must be writable
+2026-04-04 17:49:05 0 [ERROR] Plugin 'InnoDB' registration as a STORAGE ENGINE failed.
+2026-04-04 17:49:05 0 [Note] Plugin 'FEEDBACK' is disabled.
+2026-04-04 17:49:05 0 [ERROR] Could not open mysql.plugin table. Some plugins may be not loaded
+2026-04-04 17:49:05 0 [ERROR] Failed to initialize plugins.
+2026-04-04 17:49:05 0 [ERROR] Aborting

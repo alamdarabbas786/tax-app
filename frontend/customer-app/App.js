@@ -25,9 +25,9 @@ import PaymentCheckoutScreen from './screens/PaymentCheckoutScreen';
 import RideSearchingScreen from './screens/RideSearchingScreen';
 import LiveRideScreen from './screens/LiveRideScreen';
 import RideCompletedScreen from './screens/RideCompletedScreen';
+import { API_BASE } from './config';
 
 const Stack = createNativeStackNavigator();
-const API_BASE = 'http://192.168.1.44:3000';
 const CUSTOMER_SESSION_KEY = 'customer_session_v1';
 const ACTIVE_RIDE_KEY = 'customer_active_ride_v1';
 const LAST_SCREEN_KEY = 'customer_last_screen_v1';

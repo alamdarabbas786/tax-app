@@ -6,8 +6,8 @@ import * as Location from 'expo-location';
 import { useFocusEffect } from '@react-navigation/native';
 import LocationInput from '../components/LocationInput';
 import { apiPost } from '../apiClient';
+import { API_BASE } from '../config';
 
-const API_BASE = 'http://192.168.1.44:3000';
 const CUSTOMER_SESSION_KEY = 'customer_session_v1';
 const ACTIVE_RIDE_KEY = 'customer_active_ride_v1';
 const DEFAULT_REGION = {

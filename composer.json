@@ -16,7 +16,7 @@
     }
   },
   "scripts": {
-    "serve": "php -S 0.0.0.0:3000 -t public",
+    "serve": "php -S 0.0.0.0:3000 -t public public/router.php",
     "test": "phpunit -c phpunit.xml --testsuite unit",
     "test:integration": "phpunit -c phpunit.xml --testsuite integration",
     "test:integration:strict": "phpunit -c phpunit.integration.strict.xml --testsuite integration",

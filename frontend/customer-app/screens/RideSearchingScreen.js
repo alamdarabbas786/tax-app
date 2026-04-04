@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, Animated, 
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { apiGet, apiPost } from '../apiClient';
+import { API_BASE } from '../config';
 
 const ACTIVE_RIDE_KEY = 'customer_active_ride_v1';
 const isRideNotFoundError = (error) => String(error?.message || '').toLowerCase().includes('ride not found');
@@ -15,7 +16,7 @@ export default function RideSearchingScreen({ navigation, route }) {
   const [titleText, setTitleText] = useState('Finding nearby drivers...');
   const pulse = useRef(new Animated.Value(0)).current;
   const mapRef = useRef(null);
-  const resolvedBase = apiBase || 'http://192.168.1.44:3000';
+  const resolvedBase = apiBase || API_BASE;
 
   const pickup = useMemo(() => ({
     latitude: Number(ride?.pickup_lat || route?.params?.pickup?.lat || 28.6139),

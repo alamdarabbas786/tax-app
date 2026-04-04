@@ -6,6 +6,7 @@
     "sdkVersion": "54.0.0",
     "android": {
       "package": "com.quickgo.driver",
+      "usesCleartextTraffic": true,
       "googleServicesFile": "./google-services.json",
       "config": {
         "googleMaps": {
@@ -17,6 +18,9 @@
           "./assets/sounds/ride_request.wav"
         ]
       }
+    },
+    "extra": {
+      "apiBase": "http://REPLACE_WITH_SERVER_IP_OR_DOMAIN:3000"
     },
     "assetBundlePatterns": [
       "**/*"

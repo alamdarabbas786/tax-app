@@ -14,9 +14,9 @@ import NavigationScreen from './screens/NavigationScreen';
 import RideCompletedScreen from './screens/RideCompletedScreen';
 import EarningsHistoryScreen from './screens/EarningsHistoryScreen';
 import SupportScreen from './screens/SupportScreen';
+import { API_BASE } from './config';
 
 const Stack = createNativeStackNavigator();
-const API_BASE = 'http://192.168.1.44:3000';
 const SESSION_KEY = 'driver_session_v1';
 const LAST_SCREEN_KEY = 'driver_last_screen_v1';
 const RESUMABLE_SCREENS = new Set(['DriverHome', 'LiveRide', 'RideTimeline', 'Support', 'EarningsHistory']);

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { apiGet } from '../apiClient';
+import { API_BASE } from '../config';
 
 const ACTIVE_RIDE_KEY = 'customer_active_ride_v1';
 
@@ -9,7 +10,7 @@ export default function RideCompletedScreen({ navigation, route }) {
   const ride = route?.params?.ride || {};
   const session = route?.params?.session || null;
   const token = route?.params?.token || session?.token || '';
-  const apiBase = route?.params?.apiBase || 'http://192.168.1.44:3000';
+  const apiBase = route?.params?.apiBase || API_BASE;
   const summary = route?.params?.summary || {};
   const isOnlinePayment = useMemo(() => {
     const mode = String(ride?.payment_mode || ride?.payment_method || '').toLowerCase().trim();

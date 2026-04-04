@@ -13,8 +13,8 @@ import {
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { apiPost } from '../apiClient';
+import { API_BASE } from '../config';
 
-const API_BASE = 'http://192.168.1.44:3000';
 const DEFAULT_REGION = {
   latitude: 28.6139,
   longitude: 77.2090,

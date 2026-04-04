@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, FlatList, Alert, ActivityIndicator, TextInput } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { apiGet, apiPost } from '../apiClient';
+import { API_BASE } from '../config';
 
 const ACTIVE_RIDE_KEY = 'customer_active_ride_v1';
 
@@ -25,7 +26,7 @@ export default function PaymentMethodAndOffersScreen({ navigation, route }) {
   const [loadingOffers, setLoadingOffers] = useState(false);
   const [applyingCoupon, setApplyingCoupon] = useState(false);
   const [loading, setLoading] = useState(false);
-  const resolvedBase = apiBase || 'http://192.168.1.44:3000';
+  const resolvedBase = apiBase || API_BASE;
   const vehicleType = vehicle?.key || vehicle?.label?.toLowerCase() || 'mini';
   const paymentMode = payment === 'Cash' ? 'cash' : 'online';
 

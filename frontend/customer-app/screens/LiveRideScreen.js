@@ -14,6 +14,7 @@ import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { apiGet, apiPost } from '../apiClient';
+import { API_BASE } from '../config';
 
 const ACTIVE_RIDE_KEY = 'customer_active_ride_v1';
 
@@ -113,7 +114,7 @@ export default function LiveRideScreen({ navigation, route }) {
     const fetchRide = async () => {
       if (!rideId || !token) return;
       try {
-        const res = await apiGet(apiBase || 'http://192.168.1.44:3000', `/api/rides/${rideId}`, token);
+        const res = await apiGet(apiBase || API_BASE, `/api/rides/${rideId}`, token);
         if (!mounted || res?.status !== 'ok' || !res?.ride) return;
 
         const r = res.ride;
@@ -129,7 +130,7 @@ export default function LiveRideScreen({ navigation, route }) {
             ride: r,
             session,
             token,
-            apiBase: apiBase || 'http://192.168.1.44:3000',
+            apiBase: apiBase || API_BASE,
           });
           return;
         }
@@ -195,7 +196,7 @@ export default function LiveRideScreen({ navigation, route }) {
           JSON.stringify({
             rideId,
             screen: 'LiveRide',
-            apiBase: apiBase || 'http://192.168.1.44:3000',
+            apiBase: apiBase || API_BASE,
             ts: Date.now(),
           })
         );
@@ -225,7 +226,7 @@ export default function LiveRideScreen({ navigation, route }) {
 
   const cancelRide = async () => {
     try {
-      await apiPost(apiBase || 'http://192.168.1.44:3000', `/api/rides/${rideId}/cancel`, token, {
+      await apiPost(apiBase || API_BASE, `/api/rides/${rideId}/cancel`, token, {
         reason: selectedReason,
       });
       try {
