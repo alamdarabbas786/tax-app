@@ -4,7 +4,7 @@ WORKDIR /app
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
-     git unzip libpq-dev libmysqlclient-dev \
+     git unzip libpq-dev libmariadb-dev \
   && docker-php-ext-install pdo pdo_pgsql pdo_mysql \
   && rm -rf /var/lib/apt/lists/*
 
