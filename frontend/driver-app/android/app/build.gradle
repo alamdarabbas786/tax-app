@@ -108,7 +108,7 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
-            resValue "string", "react_native_dev_server_ip", "192.168.1.44"
+            resValue "string", "react_native_dev_server_ip", "tax-app-production-3500.up.railway.app"
             resValue "integer", "react_native_dev_server_port", "8082"
         }
         release {

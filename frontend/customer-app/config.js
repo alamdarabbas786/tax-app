@@ -1,6 +1,18 @@
-import { NativeModules, Platform } from 'react-native';
+const DEFAULT_API_BASE = 'https://tax-app-production-3500.up.railway.app';
 
-const PROD_FALLBACK_API_BASE = 'http://REPLACE_WITH_SERVER_IP_OR_DOMAIN:3000';
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+export const API_BASE = (process.env.EXPO_PUBLIC_API_BASE || '').trim() || DEFAULT_API_BASE;
+=======
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+const PROD_FALLBACK_API_BASE = 'https://tax-app-production-3500.up.railway.app';
 
 function detectDevHost() {
   if (!__DEV__) return null;
@@ -24,3 +36,4 @@ function defaultDevApiBase() {
 export const API_BASE =
   (process.env.EXPO_PUBLIC_API_BASE || '').trim() ||
   (__DEV__ ? defaultDevApiBase() : PROD_FALLBACK_API_BASE);
+>>>>>>> theirs

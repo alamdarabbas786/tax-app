@@ -54,16 +54,33 @@ class HealthController
 
     private function resolveDbEngine(): string
     {
-        $mysqlDsn = Env::get('MYSQL_DSN', '');
-        if ($mysqlDsn !== '') {
+        if (Env::get('MYSQL_DSN', '') !== '') {
             return 'mysql';
         }
 
-        $dsn = strtolower((string) Env::get('DATABASE_URL', ''));
-        if (str_starts_with($dsn, 'mysql:')) {
+        $databaseUrl = strtolower((string) Env::get('DATABASE_URL', ''));
+        if (str_starts_with($databaseUrl, 'mysql:') || str_starts_with($databaseUrl, 'mysql://') || str_starts_with($databaseUrl, 'mariadb://')) {
+<<<<<<< ours
+<<<<<<< ours
             return 'mysql';
         }
 
-        return 'postgres';
+        if (Env::get('MYSQL_URL', '') !== '' || Env::get('MYSQLHOST', '') !== '' || Env::get('MYSQL_HOST', '') !== '') {
+=======
+>>>>>>> theirs
+            return 'mysql';
+        }
+
+        if (Env::get('MYSQL_URL', '') !== '' || Env::get('MYSQLHOST', '') !== '' || Env::get('MYSQL_HOST', '') !== '') {
+=======
+            return 'mysql';
+        }
+
+        if (Env::get('MYSQL_URL', '') !== '' || Env::get('MYSQL_PUBLIC_URL', '') !== '' || Env::get('MYSQL_PRIVATE_URL', '') !== '' || Env::get('MYSQLHOST', '') !== '' || Env::get('MYSQL_HOST', '') !== '') {
+>>>>>>> theirs
+            return 'mysql';
+        }
+
+        return 'mysql';
     }
 }

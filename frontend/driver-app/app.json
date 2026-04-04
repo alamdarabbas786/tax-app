@@ -20,7 +20,7 @@
       }
     },
     "extra": {
-      "apiBase": "http://REPLACE_WITH_SERVER_IP_OR_DOMAIN:3000"
+      "apiBase": "https://tax-app-production-3500.up.railway.app"
     },
     "assetBundlePatterns": [
       "**/*"
