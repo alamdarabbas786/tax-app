@@ -1,4 +1,5 @@
-import { Platform, NativeModules } from 'react-native';
+<?php
+  import { Platform, NativeModules } from 'react-native';
 
 const DEFAULT_API_BASE = 'https://tax-app-production-3500.up.railway.app';
 
@@ -27,3 +28,5 @@ function defaultDevApiBase() {
 export const API_BASE =
   (process.env.EXPO_PUBLIC_API_BASE || '').trim() ||
   (__DEV__ ? defaultDevApiBase() : DEFAULT_API_BASE);
+
+?>
