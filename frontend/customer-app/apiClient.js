@@ -1,9 +1,11 @@
 import { API_BASE } from './config';
 
+// GET
 export async function apiGet(path, token) {
   return request({ path, method: 'GET', token });
 }
 
+// POST
 export async function apiPost(path, token, body) {
   return request({ path, method: 'POST', token, body });
 }
@@ -16,7 +18,10 @@ async function request({ path, method, token, body }) {
     headers['X-Auth-Token'] = String(token);
   }
 
-  const url = `${API_BASE}${path}`; //  FIXED
+  //  SAFE URL BUILD
+  const url = path.startsWith('http')
+    ? path
+    : `${API_BASE}${path}`;
 
   console.log("API CALL:", url);
 
