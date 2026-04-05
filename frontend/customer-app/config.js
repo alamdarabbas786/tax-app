@@ -22,7 +22,7 @@ function getDevApi() {
     : 'http://127.0.0.1:3000';
 }
 
-// 🔥 FINAL EXPORT
+//  FINAL EXPORT
 export const API_BASE =
   (process.env.EXPO_PUBLIC_API_BASE || '').trim() ||
-  PROD_API; // 👉 ALWAYS Railway use karega
+  PROD_API; //  ALWAYS Railway use karega
