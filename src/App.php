@@ -436,6 +436,32 @@ class App
             (new AdminController())->serveDriverDoc();
             return;
         }
+		if ($method === 'POST' && $path === '/api/verify-otp') {
+   			 (new AuthController())->verifyOtpSimple();
+  			  return;
+		}	
+		if ($method === 'POST' && $path === '/login') {
+		    header('Content-Type: application/json');
+		
+		    $data = json_decode(file_get_contents("php://input"), true);
+		
+		    $phone = $data['phone'] ?? '';
+		
+		    if (!$phone) {
+		        echo json_encode([
+		            "status" => "error",
+		            "message" => "Phone required"
+		        ]);
+		        return;
+		    }
+		
+		    echo json_encode([
+		        "status" => "success",
+		        "role" => "customer",
+		        "phone" => $phone
+		    ]);
+		    return;
+		}
 
         http_response_code(404);
         header('Content-Type: application/json');
