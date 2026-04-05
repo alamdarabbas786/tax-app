@@ -1,16 +1,13 @@
 import { API_BASE } from './config';
 
-// GET
 export async function apiGet(path, token) {
   return request({ path, method: 'GET', token });
 }
 
-// POST
 export async function apiPost(path, token, body) {
   return request({ path, method: 'POST', token, body });
 }
 
-//  MAIN REQUEST FUNCTION
 async function request({ path, method, token, body }) {
   const headers = { 'Content-Type': 'application/json' };
 
@@ -19,10 +16,9 @@ async function request({ path, method, token, body }) {
     headers['X-Auth-Token'] = String(token);
   }
 
-  //  FINAL URL (IMPORTANT)
-  const url = `${API_BASE}/public${path}`;
+  const url = `${API_BASE}${path}`; //  FIXED
 
-  console.log("API CALL:", url); // debug
+  console.log("API CALL:", url);
 
   const res = await fetch(url, {
     method,
