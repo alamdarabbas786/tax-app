@@ -1,10 +1,11 @@
 <?php
 namespace App\Db;
+
 use PDO;
-use PDOException;
+
 class MySQL
 {
-	 private static ?PDO $pdo = null;
+    private static ?PDO $pdo = null;
 
     public static function connection(): PDO
     {
@@ -20,116 +21,52 @@ class MySQL
 
         return self::$pdo;
     }
-	 public static function ping(): void
+
+    public static function ping(): void
     {
-        $stmt = self::connection()->query('SELECT 1');
-        $stmt->fetchColumn();
+        self::connection()->query('SELECT 1');
     }
-	
-	private static function resolveConfig(): array
+
+    private static function resolveConfig(): array
     {
-        $dsn = (string) (getenv('MYSQL_DSN') ?: '');
-        $user = self::firstNonEmpty([
-            getenv('MYSQL_USER') ?: null,
-            getenv('MYSQLUSER') ?: null,
-            getenv('DB_USER') ?: null,
-        ]);
-        $pass = self::firstNonEmpty([
-            getenv('MYSQL_PASSWORD') ?: null,
-            getenv('MYSQLPASSWORD') ?: null,
-            getenv('DB_PASS') ?: null,
-            getenv('DB_PASSWORD') ?: null,
-        ]);
+        // ===== OPTION 1: Railway standard env =====
+        $host = getenv('MYSQLHOST');
+        $port = getenv('MYSQLPORT');
+        $db   = getenv('MYSQLDATABASE');
+        $user = getenv('MYSQLUSER');
+        $pass = getenv('MYSQLPASSWORD');
 
-        if ($dsn === '') {
-            $urlCandidates = [
-                getenv('MYSQL_URL') ?: '',
-                getenv('MYSQL_PUBLIC_URL') ?: '',
-                getenv('MYSQL_PRIVATE_URL') ?: '',
-                getenv('DATABASE_URL') ?: '',
-            ];
-
-            foreach ($urlCandidates as $rawUrl) {
-                $url = trim((string) $rawUrl);
-                if ($url === '') {
-                    continue;
-                }
-
-                if (str_starts_with($url, 'mysql:')) {
-                    $dsn = $url;
-                    break;
-                }
-
-                if (preg_match('/^(mysql|mariadb):\/\//i', $url) === 1) {
-                    [$parsedDsn, $parsedUser, $parsedPass] = self::parseMysqlUriToPdoDsn($url);
-                    if ($parsedDsn !== '') {
-                        $dsn = $parsedDsn;
-                        if (($user ?? '') === '' && $parsedUser !== '') {
-                            $user = $parsedUser;
-                        }
-                        if (($pass ?? '') === '' && $parsedPass !== '') {
-                            $pass = $parsedPass;
-                        }
-                        break;
-                    }
-                }
-            }
+        if ($host && $db) {
+            $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4";
+            return [$dsn, $user, $pass];
         }
 
-        if ($dsn === '') {
-            $host = self::firstNonEmpty([
-                getenv('MYSQL_HOST') ?: null,
-                getenv('MYSQLHOST') ?: null,
-                getenv('DB_HOST') ?: null,
-            ]);
-            $port = self::firstNonEmpty([
-                getenv('MYSQL_PORT') ?: null,
-                getenv('MYSQLPORT') ?: null,
-                '3306',
-            ]);
-            $database = self::firstNonEmpty([
-                getenv('MYSQL_DATABASE') ?: null,
-                getenv('MYSQLDATABASE') ?: null,
-                getenv('DB_NAME') ?: null,
-                getenv('DB_DATABASE') ?: null,
-            ]);
-            $charset = self::firstNonEmpty([
-                getenv('MYSQL_CHARSET') ?: null,
-                'utf8mb4',
-            ]);
+        // ===== OPTION 2: MYSQL_URL (Railway format) =====
+        $url = getenv('MYSQL_URL');
 
-            if (($host ?? '') !== '' && ($database ?? '') !== '') {
-                $dsn = sprintf(
-                    'mysql:host=%s;port=%s;dbname=%s;charset=%s',
-                    $host,
-                    $port,
-                    $database,
-                    $charset
-                );
-            }
+        if ($url && str_starts_with($url, 'mysql://')) {
+            $parts = parse_url($url);
+
+            $host = $parts['host'] ?? '';
+            $port = $parts['port'] ?? '3306';
+            $db   = ltrim($parts['path'] ?? '', '/');
+            $user = $parts['user'] ?? '';
+            $pass = $parts['pass'] ?? '';
+
+            $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4";
+
+            return [$dsn, $user, $pass];
         }
 
-        if ($dsn === '') {
-            throw new \RuntimeException(
-                'MySQL config missing. Set MYSQL_DSN or MYSQL_URL (or MYSQLHOST/MYSQLDATABASE vars).'
-            );
-        }
+        // ===== OPTION 3: LOCAL FALLBACK =====
+        $host = getenv('DB_HOST') ?: 'localhost';
+        $port = getenv('DB_PORT') ?: '3306';
+        $db   = getenv('DB_NAME') ?: 'test';
+        $user = getenv('DB_USER') ?: 'root';
+        $pass = getenv('DB_PASS') ?: '';
+
+        $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4";
 
         return [$dsn, $user, $pass];
     }
-
-    private static function firstNonEmpty(array $values): ?string
-    {
-        foreach ($values as $value) {
-            if ($value === null) {
-                continue;
-            }
-            $trimmed = trim((string) $value);
-            if ($trimmed !== '') {
-                return $trimmed;
-            }
-        }
-        return null;
-    }
 }
-?>
