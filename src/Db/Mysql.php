@@ -8,45 +8,45 @@ class MySQL
 
     public static function connection(): PDO
     {
-		$host = getenv('MYSQLHOST');
-		$port = getenv('MYSQLPORT');
-		$db   = getenv('MYSQLDATABASE');
-		$user = getenv('MYSQLUSER');
-		$pass = getenv('MYSQLPASSWORD');
+        if (self::$pdo !== null) {
+            return self::$pdo;
+        }
 
-		$dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4";
+        [$dsn, $user, $pass] = self::resolveConfig();
 
-		return new PDO($dsn, $user, $pass, [
-			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-		]);
-	}
+        self::$pdo = new PDO($dsn, $user, $pass, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+        ]);
+
+        return self::$pdo;
+    }
 	 public static function ping(): void
     {
         $stmt = self::connection()->query('SELECT 1');
         $stmt->fetchColumn();
     }
 	
-	 private static function resolveConfig(): array
+	private static function resolveConfig(): array
     {
-        $dsn = (string) Env::get('MYSQL_DSN', '');
+        $dsn = (string) (getenv('MYSQL_DSN') ?: '');
         $user = self::firstNonEmpty([
-            Env::get('MYSQL_USER', null),
-            Env::get('MYSQLUSER', null),
-            Env::get('DB_USER', null),
+            getenv('MYSQL_USER') ?: null,
+            getenv('MYSQLUSER') ?: null,
+            getenv('DB_USER') ?: null,
         ]);
         $pass = self::firstNonEmpty([
-            Env::get('MYSQL_PASSWORD', null),
-            Env::get('MYSQLPASSWORD', null),
-            Env::get('DB_PASS', null),
-            Env::get('DB_PASSWORD', null),
+            getenv('MYSQL_PASSWORD') ?: null,
+            getenv('MYSQLPASSWORD') ?: null,
+            getenv('DB_PASS') ?: null,
+            getenv('DB_PASSWORD') ?: null,
         ]);
 
         if ($dsn === '') {
             $urlCandidates = [
-                Env::get('MYSQL_URL', ''),
-                Env::get('MYSQL_PUBLIC_URL', ''),
-                Env::get('MYSQL_PRIVATE_URL', ''),
-                Env::get('DATABASE_URL', ''),
+                getenv('MYSQL_URL') ?: '',
+                getenv('MYSQL_PUBLIC_URL') ?: '',
+                getenv('MYSQL_PRIVATE_URL') ?: '',
+                getenv('DATABASE_URL') ?: '',
             ];
 
             foreach ($urlCandidates as $rawUrl) {
@@ -78,23 +78,23 @@ class MySQL
 
         if ($dsn === '') {
             $host = self::firstNonEmpty([
-                Env::get('MYSQL_HOST', null),
-                Env::get('MYSQLHOST', null),
-                Env::get('DB_HOST', null),
+                getenv('MYSQL_HOST') ?: null,
+                getenv('MYSQLHOST') ?: null,
+                getenv('DB_HOST') ?: null,
             ]);
             $port = self::firstNonEmpty([
-                Env::get('MYSQL_PORT', null),
-                Env::get('MYSQLPORT', null),
+                getenv('MYSQL_PORT') ?: null,
+                getenv('MYSQLPORT') ?: null,
                 '3306',
             ]);
             $database = self::firstNonEmpty([
-                Env::get('MYSQL_DATABASE', null),
-                Env::get('MYSQLDATABASE', null),
-                Env::get('DB_NAME', null),
-                Env::get('DB_DATABASE', null),
+                getenv('MYSQL_DATABASE') ?: null,
+                getenv('MYSQLDATABASE') ?: null,
+                getenv('DB_NAME') ?: null,
+                getenv('DB_DATABASE') ?: null,
             ]);
             $charset = self::firstNonEmpty([
-                Env::get('MYSQL_CHARSET', null),
+                getenv('MYSQL_CHARSET') ?: null,
                 'utf8mb4',
             ]);
 
