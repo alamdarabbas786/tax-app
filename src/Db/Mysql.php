@@ -132,44 +132,6 @@ class MySQL
         return null;
     }
 
-    private static function parseMysqlUriToPdoDsn(string $url): array
-    {
-        $parts = parse_url($url);
-        if (!is_array($parts)) {
-            return ['', '', ''];
-        }
-
-        $host = (string) ($parts['host'] ?? '');
-        if ($host === '') {
-            return ['', '', ''];
-        }
-
-        $port = (string) ($parts['port'] ?? 3306);
-        $path = (string) ($parts['path'] ?? '');
-        $database = ltrim($path, '/');
-        if ($database === '') {
-            return ['', '', ''];
-        }
-
-        $charset = 'utf8mb4';
-        if (isset($parts['query'])) {
-            parse_str((string) $parts['query'], $query);
-            if (!empty($query['charset'])) {
-                $charset = (string) $query['charset'];
-            }
-        }
-
-        $dsn = sprintf(
-            'mysql:host=%s;port=%s;dbname=%s;charset=%s',
-            $host,
-            $port,
-            $database,
-            $charset
-        );
-
-        $user = isset($parts['user']) ? rawurldecode((string) $parts['user']) : '';
-        $pass = isset($parts['pass']) ? rawurldecode((string) $parts['pass']) : '';
-
 
     
     private static function resolveConfig(): array
