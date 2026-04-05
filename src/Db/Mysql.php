@@ -170,9 +170,7 @@ class MySQL
         $user = isset($parts['user']) ? rawurldecode((string) $parts['user']) : '';
         $pass = isset($parts['pass']) ? rawurldecode((string) $parts['pass']) : '';
 
->>>>>>> theirs
 
->>>>>>> theirs
      * @return array{0:string,1:?string,2:?string}
      */
     private static function resolveConfig(): array
@@ -187,7 +185,7 @@ class MySQL
 
         $urlCandidates = [
             Env::get('MYSQL_URL', null),
-<<<<<<< ours
+
             Env::get('DATABASE_URL', null),
             Env::get('CLEARDB_DATABASE_URL', null),
 
@@ -198,7 +196,7 @@ class MySQL
             Env::get('DATABASE_PRIVATE_URL', null),
             Env::get('CLEARDB_DATABASE_URL', null),
             Env::get('JAWSDB_URL', null),
->>>>>>> theirs
+
         ];
 
         foreach ($urlCandidates as $candidate) {
@@ -217,21 +215,17 @@ class MySQL
             return [$partsDsn, $user ?? $partsUser, $pass ?? $partsPass];
         }
 
-<<<<<<< ours
-<<<<<<< ours
+
         throw new \RuntimeException('MYSQL_DSN is not set (also checked MYSQL_URL/DATABASE_URL and MYSQLHOST-style env vars)');
 
->>>>>>> theirs
+
         // Final fallback for environments where only host/user/password defaults are expected.
         $defaultDsn = 'mysql:host=127.0.0.1;port=3306;dbname=airport_taxi;charset=utf8mb4';
         $defaultUser = $user ?? Env::get('DB_USER', 'appuser');
         $defaultPass = $pass ?? Env::get('DB_PASSWORD', null);
 
         return [$defaultDsn, $defaultUser, $defaultPass];
-<<<<<<< ours
->>>>>>> theirs
 
->>>>>>> theirs
     }
 
     /**
@@ -282,7 +276,7 @@ class MySQL
      */
     private static function fromDiscreteEnv(): array
     {
-<<<<<<< ours
+
         $host = Env::get('MYSQLHOST', Env::get('MYSQL_HOST', Env::get('DB_HOST', null)));
         $db = Env::get('MYSQLDATABASE', Env::get('MYSQL_DATABASE', Env::get('DB_DATABASE', null)));
 
@@ -294,28 +288,25 @@ class MySQL
             'MYSQLDATABASE',
             Env::get('MYSQL_DATABASE', Env::get('DB_DATABASE', Env::get('DATABASE_NAME', null)))
         );
->>>>>>> theirs
+
         if (!is_string($host) || trim($host) === '' || !is_string($db) || trim($db) === '') {
             return ['', null, null];
         }
 
-<<<<<<< ours
+
         $portRaw = Env::get('MYSQLPORT', Env::get('MYSQL_PORT', Env::get('DB_PORT', '3306')));
 
         $portRaw = Env::get('MYSQLPORT', Env::get('MYSQL_PORT', Env::get('DB_PORT', Env::get('DATABASE_PORT', '3306'))));
->>>>>>> theirs
+
         $port = is_string($portRaw) && ctype_digit($portRaw) ? (int) $portRaw : 3306;
 
         $charset = Env::get('MYSQL_CHARSET', 'utf8mb4') ?: 'utf8mb4';
         $dsn = sprintf('mysql:host=%s;port=%d;dbname=%s;charset=%s', trim($host), $port, trim($db), $charset);
 
-<<<<<<< ours
+
         $user = Env::get('MYSQLUSER', Env::get('MYSQL_USERNAME', Env::get('MYSQL_USER', Env::get('DB_USER', null))));
         $pass = Env::get('MYSQLPASSWORD', Env::get('MYSQL_PASSWORD', Env::get('DB_PASSWORD', null)));
-<<<<<<< ours
->>>>>>> theirs
 
->>>>>>> theirs
 
         $user = Env::get(
             'MYSQLUSER',
@@ -325,7 +316,7 @@ class MySQL
             'MYSQLPASSWORD',
             Env::get('MYSQL_PASSWORD', Env::get('DB_PASSWORD', Env::get('DATABASE_PASSWORD', null)))
         );
->>>>>>> theirs
+
 
         return [$dsn, $user, $pass];
     }
