@@ -171,8 +171,7 @@ class MySQL
         $pass = isset($parts['pass']) ? rawurldecode((string) $parts['pass']) : '';
 
 
-     * @return array{0:string,1:?string,2:?string}
-     */
+    
     private static function resolveConfig(): array
     {
         $dsn = trim((string) Env::get('MYSQL_DSN', ''));
@@ -228,9 +227,7 @@ class MySQL
 
     }
 
-    /**
-     * @return array{0:string,1:?string,2:?string}
-     */
+  
     private static function fromUrl(string $value): array
     {
         $raw = trim($value);
@@ -271,9 +268,6 @@ class MySQL
         return [$dsn, $user, $pass];
     }
 
-    /**
-     * @return array{0:string,1:?string,2:?string}
-     */
     private static function fromDiscreteEnv(): array
     {
 
