@@ -20,4 +20,4 @@ RUN mkdir -p /app/uploads/driver_docs \
   && chown -R www-data:www-data /app/uploads \
   && chmod -R 775 /app/uploads
 
-CMD ["php-fpm", "-F"]
+CMD ["sh", "-lc", "php -S 0.0.0.0:${PORT:-3000} -t public public/router.php"]
