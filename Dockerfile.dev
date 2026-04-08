@@ -1,4 +1,4 @@
-﻿FROM php:8.2-cli
+FROM php:8.2-cli
 
 WORKDIR /app
 
@@ -12,9 +12,10 @@ COPY composer.json composer.lock* /app/
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
   && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
   && rm composer-setup.php \
-  && composer install --no-interaction --no-progress --prefer-dist || true
+  && composer install --no-interaction --no-progress --prefer-dist
 
 COPY . /app
 
 EXPOSE 3000
 CMD ["sh", "-lc", "php -S 0.0.0.0:${PORT:-3000} -t public public/router.php"]
+
