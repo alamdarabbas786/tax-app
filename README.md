@@ -29,7 +29,7 @@
    - Basic auth: `ADMIN_WEB_USER` / `ADMIN_WEB_PASS`
 
 ## Railway Deploy Notes
-- Use Railway domain, not an IP. Example: `https://your-app.up.railway.app`
+- Use Railway domain, not an IP. Example: `https://tax-app-production-3500.up.railway.app`
 - Start command (important for `/api/*` routes):
   ```
   php -S 0.0.0.0:$PORT -t public public/router.php
@@ -118,7 +118,7 @@ Notes:
 - For Railway backend, set `EXPO_PUBLIC_API_BASE` to your Railway domain.
   Example:
   ```
-  EXPO_PUBLIC_API_BASE=https://your-app.up.railway.app
+  EXPO_PUBLIC_API_BASE=https://tax-app-production-3500.up.railway.app
   ```
 - Set `GOOGLE_PLACES_API_KEY` in `frontend/customer-app/App.js`.
 - Driver app uses GPS; allow location permission when prompted.
