@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, Animated, Alert } from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from '../MapViewCompat';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { apiGet, apiPost } from '../apiClient';
 import { API_BASE } from '../config';
@@ -405,6 +405,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
 });
+
 
 
 

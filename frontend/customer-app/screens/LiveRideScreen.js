@@ -10,7 +10,7 @@ import {
   View,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from '../MapViewCompat';
 import * as Location from 'expo-location';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { apiGet, apiPost } from '../apiClient';
@@ -514,6 +514,7 @@ const styles = StyleSheet.create({
   closeBtn: { marginTop: 8, alignItems: 'center', paddingVertical: 8 },
   closeText: { color: '#6B7280', fontWeight: '700' },
 });
+
 
 
 

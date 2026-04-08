@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, Alert, Animated, Easing, ScrollView, Switch, Modal, Platform } from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from '../MapViewCompat';
 import * as Location from 'expo-location';
 import * as Notifications from 'expo-notifications';
 import * as Speech from 'expo-speech';
@@ -789,3 +789,4 @@ export default function DriverHomeScreen({ route, navigation, apiBase, sessionKe
     </View>
   );
 }
+

@@ -17,7 +17,7 @@ class HealthController
         $details = [
             $dbEngine => ['ok' => false, 'latency_ms' => null],
             'redis' => ['ok' => false, 'latency_ms' => null],
-            'overall_latency_ms' => null
+            'overall_latency_ms' => null,
         ];
 
         try {
@@ -31,6 +31,7 @@ class HealthController
             $details[$dbEngine]['latency_ms'] = (int) round((microtime(true) - $dbStart) * 1000);
         } catch (\Throwable $e) {
             $details[$dbEngine]['ok'] = false;
+            $details[$dbEngine]['error'] = $e->getMessage();
         }
 
         try {
@@ -40,6 +41,7 @@ class HealthController
             $details['redis']['latency_ms'] = (int) round((microtime(true) - $redisStart) * 1000);
         } catch (\Throwable $e) {
             $details['redis']['ok'] = false;
+            $details['redis']['error'] = $e->getMessage();
         }
 
         $details['overall_latency_ms'] = (int) round((microtime(true) - $startedAt) * 1000);
@@ -49,7 +51,11 @@ class HealthController
         if (!headers_sent()) {
             header('Content-Type: application/json');
         }
-        echo json_encode(['status' => $ok ? 'ok' : 'error', 'details' => $details]);
+
+        echo json_encode([
+            'status' => $ok ? 'ok' : 'error',
+            'details' => $details,
+        ]);
     }
 
     private function resolveDbEngine(): string
@@ -59,26 +65,30 @@ class HealthController
         }
 
         $databaseUrl = strtolower((string) Env::get('DATABASE_URL', ''));
-        if (str_starts_with($databaseUrl, 'mysql:') || str_starts_with($databaseUrl, 'mysql://') || str_starts_with($databaseUrl, 'mariadb://')) {
-<<<<<<< ours
-<<<<<<< ours
+        if (
+            str_starts_with($databaseUrl, 'mysql:') ||
+            str_starts_with($databaseUrl, 'mysql://') ||
+            str_starts_with($databaseUrl, 'mariadb://')
+        ) {
             return 'mysql';
         }
 
-        if (Env::get('MYSQL_URL', '') !== '' || Env::get('MYSQLHOST', '') !== '' || Env::get('MYSQL_HOST', '') !== '') {
-=======
->>>>>>> theirs
+        if (
+            Env::get('MYSQL_URL', '') !== '' ||
+            Env::get('MYSQL_PUBLIC_URL', '') !== '' ||
+            Env::get('MYSQL_PRIVATE_URL', '') !== '' ||
+            Env::get('MYSQLHOST', '') !== '' ||
+            Env::get('MYSQL_HOST', '') !== ''
+        ) {
             return 'mysql';
         }
 
-        if (Env::get('MYSQL_URL', '') !== '' || Env::get('MYSQLHOST', '') !== '' || Env::get('MYSQL_HOST', '') !== '') {
-=======
-            return 'mysql';
-        }
-
-        if (Env::get('MYSQL_URL', '') !== '' || Env::get('MYSQL_PUBLIC_URL', '') !== '' || Env::get('MYSQL_PRIVATE_URL', '') !== '' || Env::get('MYSQLHOST', '') !== '' || Env::get('MYSQL_HOST', '') !== '') {
->>>>>>> theirs
-            return 'mysql';
+        if (
+            str_starts_with($databaseUrl, 'pgsql:') ||
+            str_starts_with($databaseUrl, 'postgres://') ||
+            str_starts_with($databaseUrl, 'postgresql://')
+        ) {
+            return 'pgsql';
         }
 
         return 'mysql';

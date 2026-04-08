@@ -28,6 +28,20 @@
    ```
    - Basic auth: `ADMIN_WEB_USER` / `ADMIN_WEB_PASS`
 
+## Railway Deploy Notes
+- Use Railway domain, not an IP. Example: `https://your-app.up.railway.app`
+- Start command (important for `/api/*` routes):
+  ```
+  php -S 0.0.0.0:$PORT -t public public/router.php
+  ```
+- Required env vars on Railway:
+  - `MYSQL_DSN=mysql:host=<host>;port=<port>;dbname=<db>;charset=utf8mb4`
+  - `MYSQL_USER=<user>`
+  - `MYSQL_PASSWORD=<password>`
+- Quick checks after deploy:
+  - `GET /mysql-health` should return JSON
+  - `POST /api/auth/request-otp` should return JSON (not 404 HTML)
+
 ## Environment
 Set these in `.env`:
 - `MYSQL_DSN`, `MYSQL_USER`, `MYSQL_PASSWORD`
@@ -101,7 +115,11 @@ npm run start
 ```
 
 Notes:
-- Update API base URL in the apps if testing on a real device (use your machine LAN IP).
+- For Railway backend, set `EXPO_PUBLIC_API_BASE` to your Railway domain.
+  Example:
+  ```
+  EXPO_PUBLIC_API_BASE=https://your-app.up.railway.app
+  ```
 - Set `GOOGLE_PLACES_API_KEY` in `frontend/customer-app/App.js`.
 - Driver app uses GPS; allow location permission when prompted.
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Platform, Alert } from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from '../MapViewCompat';
 import * as Location from 'expo-location';
 
 const DEFAULT_REGION = {
@@ -196,3 +196,4 @@ const styles = StyleSheet.create({
     color: '#111827'
   }
 });
+

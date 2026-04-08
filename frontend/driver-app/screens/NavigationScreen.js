@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, TouchableOpacity, Alert, Platform } from 'react-native';
-import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from '../MapViewCompat';
 import * as Location from 'expo-location';
 import Constants from 'expo-constants';
 import { styles } from '../styles';
@@ -251,3 +251,4 @@ export default function NavigationScreen({ route, navigation, apiBase }) {
     </View>
   );
 }
+

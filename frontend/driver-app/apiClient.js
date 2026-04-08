@@ -11,6 +11,8 @@ export async function apiPostForm(baseUrl, path, token, formData) {
 }
 
 async function request({ baseUrl, path, method, token, body, isForm }) {
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  const baseCandidates = getBaseCandidates(baseUrl);
   const headers = {};
   if (!isForm) headers['Content-Type'] = 'application/json';
   if (token) {
@@ -18,26 +20,52 @@ async function request({ baseUrl, path, method, token, body, isForm }) {
     headers['X-Auth-Token'] = String(token);
   }
 
-  const res = await fetch(`${baseUrl}${path}`, {
-    method,
-    headers,
-    body: body ? (isForm ? body : JSON.stringify(body)) : undefined
-  });
+  for (let i = 0; i < baseCandidates.length; i += 1) {
+    const currentBase = baseCandidates[i];
+    const res = await fetch(`${currentBase}${normalizedPath}`, {
+      method,
+      headers,
+      body: body ? (isForm ? body : JSON.stringify(body)) : undefined
+    });
 
-  const text = await res.text();
-  let data;
-  try {
-    data = text ? JSON.parse(text) : null;
-  } catch (e) {
-    data = null;
-  }
+    const text = await res.text();
+    let data;
+    try {
+      data = text ? JSON.parse(text) : null;
+    } catch (e) {
+      data = null;
+    }
 
-  if (!res.ok) {
+    if (res.ok) {
+      // Some endpoints can respond with empty body on success (e.g. 204).
+      // Return an object so callers that read `res.status` do not crash.
+      return data ?? {};
+    }
+
+    // Railway deployments are often reachable on either base URL or base/public.
+    // Retry once on the alternate base only when route is missing.
+    const canRetry = res.status === 404 && i < baseCandidates.length - 1;
+    if (canRetry) {
+      continue;
+    }
+
     const msg = data?.message || `Request failed (${res.status})`;
     throw new Error(msg);
   }
 
-  // Some endpoints can respond with empty body on success (e.g. 204).
-  // Return an object so callers that read `res.status` do not crash.
-  return data ?? {};
+  throw new Error('Request failed');
+}
+
+function getBaseCandidates(baseUrl) {
+  const normalized = String(baseUrl || '').trim().replace(/\/+$/, '');
+  if (!normalized) {
+    return [''];
+  }
+
+  if (normalized.endsWith('/public')) {
+    const withoutPublic = normalized.replace(/\/public$/, '');
+    return [normalized, withoutPublic];
+  }
+
+  return [normalized, `${normalized}/public`];
 }

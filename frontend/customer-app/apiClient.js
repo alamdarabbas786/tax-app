@@ -10,7 +10,13 @@ export async function apiPost(path, token, body) {
   return request({ path, method: 'POST', token, body });
 }
 
+<<<<<<< HEAD
 async function request({ path, method, token, body }) {
+=======
+async function request({ baseUrl, path, method, token, body }) {
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  const baseCandidates = getBaseCandidates(baseUrl);
+>>>>>>> 029df88 (fix api routing and mobile login)
   const headers = { 'Content-Type': 'application/json' };
 
   if (token) {
@@ -18,6 +24,7 @@ async function request({ path, method, token, body }) {
     headers['X-Auth-Token'] = String(token);
   }
 
+<<<<<<< HEAD
   //  SAFE URL BUILD
   const url = path.startsWith('http')
     ? path
@@ -39,11 +46,52 @@ async function request({ path, method, token, body }) {
   } catch (e) {
     data = null;
   }
+=======
+  for (let i = 0; i < baseCandidates.length; i += 1) {
+    const currentBase = baseCandidates[i];
+    const res = await fetch(`${currentBase}${normalizedPath}`, {
+      method,
+      headers,
+      body: body ? JSON.stringify(body) : undefined
+    });
 
-  if (!res.ok) {
+    const text = await res.text();
+    let data;
+    try {
+      data = text ? JSON.parse(text) : null;
+    } catch (e) {
+      data = null;
+    }
+
+    if (res.ok) {
+      return data;
+    }
+
+    // Railway deployments are often reachable on either base URL or base/public.
+    // Retry once on the alternate base only when route is missing.
+    const canRetry = res.status === 404 && i < baseCandidates.length - 1;
+    if (canRetry) {
+      continue;
+    }
+>>>>>>> 029df88 (fix api routing and mobile login)
+
     const msg = data?.message || `Request failed (${res.status})`;
     throw new Error(msg);
   }
 
-  return data;
+  throw new Error('Request failed');
+}
+
+function getBaseCandidates(baseUrl) {
+  const normalized = String(baseUrl || '').trim().replace(/\/+$/, '');
+  if (!normalized) {
+    return [''];
+  }
+
+  if (normalized.endsWith('/public')) {
+    const withoutPublic = normalized.replace(/\/public$/, '');
+    return [normalized, withoutPublic];
+  }
+
+  return [normalized, `${normalized}/public`];
 }

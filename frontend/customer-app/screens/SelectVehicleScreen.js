@@ -10,7 +10,7 @@ import {
   View,
   ActivityIndicator
 } from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from '../MapViewCompat';
 import * as Location from 'expo-location';
 import { apiPost } from '../apiClient';
 import { API_BASE } from '../config';
@@ -431,6 +431,7 @@ const styles = StyleSheet.create({
     color: '#111827'
   }
 });
+
 
 
 

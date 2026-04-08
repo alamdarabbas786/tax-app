@@ -24,6 +24,24 @@ class App
         $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
         $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?? '/';
 
+        // Some hosts are configured with public/ as document root and users may still hit /public/*.
+        // Normalize this prefix so both forms work.
+        if ($path === '/public' || str_starts_with($path, '/public/')) {
+            $path = substr($path, 7) ?: '/';
+        }
+
+        if ($method === 'GET' && $path === '/') {
+            if (!headers_sent()) {
+                header('Content-Type: application/json');
+            }
+            echo json_encode([
+                'status' => 'ok',
+                'service' => 'taxi-backend',
+                'message' => 'Use /api/* endpoints. Health: /mysql-health',
+            ]);
+            return;
+        }
+
         if ($method === 'GET' && $path === '/health') {
             (new HealthController())->handle();
             return;

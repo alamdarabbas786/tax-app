@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from '../MapViewCompat';
 import * as Location from 'expo-location';
 import * as Speech from 'expo-speech';
 import * as Notifications from 'expo-notifications';
@@ -896,3 +896,4 @@ export default function LiveRideScreen({ route, navigation, apiBase }) {
     </SafeAreaView>
   );
 }
+

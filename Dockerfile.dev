@@ -17,4 +17,4 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
 COPY . /app
 
 EXPOSE 3000
-CMD ["php", "-S", "0.0.0.0:3000", "-t", "public"]
+CMD ["sh", "-lc", "php -S 0.0.0.0:${PORT:-3000} -t public public/router.php"]
