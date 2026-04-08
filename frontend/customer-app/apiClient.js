@@ -1,22 +1,14 @@
-import { API_BASE } from './config';
-
-// GET
-export async function apiGet(path, token) {
-  return request({ path, method: 'GET', token });
+export async function apiGet(baseUrl, path, token) {
+  return request({ baseUrl, path, method: 'GET', token });
 }
 
-// POST
-export async function apiPost(path, token, body) {
-  return request({ path, method: 'POST', token, body });
+export async function apiPost(baseUrl, path, token, body) {
+  return request({ baseUrl, path, method: 'POST', token, body });
 }
 
-<<<<<<< HEAD
-async function request({ path, method, token, body }) {
-=======
 async function request({ baseUrl, path, method, token, body }) {
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
   const baseCandidates = getBaseCandidates(baseUrl);
->>>>>>> 029df88 (fix api routing and mobile login)
   const headers = { 'Content-Type': 'application/json' };
 
   if (token) {
@@ -24,35 +16,12 @@ async function request({ baseUrl, path, method, token, body }) {
     headers['X-Auth-Token'] = String(token);
   }
 
-<<<<<<< HEAD
-  //  SAFE URL BUILD
-  const url = path.startsWith('http')
-    ? path
-    : `${API_BASE}${path}`;
-
-  console.log("API CALL:", url);
-
-  const res = await fetch(url, {
-    method,
-    headers,
-    body: body ? JSON.stringify(body) : undefined
-  });
-
-  const text = await res.text();
-
-  let data;
-  try {
-    data = text ? JSON.parse(text) : null;
-  } catch (e) {
-    data = null;
-  }
-=======
   for (let i = 0; i < baseCandidates.length; i += 1) {
     const currentBase = baseCandidates[i];
     const res = await fetch(`${currentBase}${normalizedPath}`, {
       method,
       headers,
-      body: body ? JSON.stringify(body) : undefined
+      body: body ? JSON.stringify(body) : undefined,
     });
 
     const text = await res.text();
@@ -67,13 +36,12 @@ async function request({ baseUrl, path, method, token, body }) {
       return data;
     }
 
-    // Railway deployments are often reachable on either base URL or base/public.
+    // Railway deployments may be reachable on either base URL or base/public.
     // Retry once on the alternate base only when route is missing.
     const canRetry = res.status === 404 && i < baseCandidates.length - 1;
     if (canRetry) {
       continue;
     }
->>>>>>> 029df88 (fix api routing and mobile login)
 
     const msg = data?.message || `Request failed (${res.status})`;
     throw new Error(msg);
