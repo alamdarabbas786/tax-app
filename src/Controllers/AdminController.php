@@ -630,6 +630,10 @@ class AdminController
         }
 
         $pdo = Mysql::connection();
+        if (!$this->tableExists($pdo, 'drivers')) {
+            header('Location: /admin/verification?driver_status=error&driver_msg=' . urlencode('Drivers table missing'));
+            return;
+        }
         $stmt = $pdo->prepare('UPDATE drivers SET is_verified = 1, verification_status = "approved", verification_reason = NULL WHERE id = ?');
         $stmt->execute([$driverId]);
 
@@ -653,6 +657,10 @@ class AdminController
         }
 
         $pdo = Mysql::connection();
+        if (!$this->tableExists($pdo, 'drivers')) {
+            header('Location: /admin/verification?driver_status=error&driver_msg=' . urlencode('Drivers table missing'));
+            return;
+        }
         $stmt = $pdo->prepare('UPDATE drivers SET is_verified = 0, verification_status = "rejected", verification_reason = ? WHERE id = ?');
         $stmt->execute([$reason, $driverId]);
 
@@ -669,6 +677,10 @@ class AdminController
             return;
         }
         $pdo = Mysql::connection();
+        if (!$this->tableExists($pdo, 'drivers')) {
+            header('Location: /admin/drivers?driver_status=error&driver_msg=' . urlencode('Drivers table missing'));
+            return;
+        }
         $stmt = $pdo->prepare('UPDATE drivers SET is_blocked = 1, is_available = 0 WHERE id = ?');
         $stmt->execute([$driverId]);
         header('Location: /admin/drivers');
@@ -684,6 +696,10 @@ class AdminController
             return;
         }
         $pdo = Mysql::connection();
+        if (!$this->tableExists($pdo, 'drivers')) {
+            header('Location: /admin/drivers?driver_status=error&driver_msg=' . urlencode('Drivers table missing'));
+            return;
+        }
         $stmt = $pdo->prepare('UPDATE drivers SET is_blocked = 0 WHERE id = ?');
         $stmt->execute([$driverId]);
         header('Location: /admin/drivers');
@@ -1015,6 +1031,12 @@ class AdminController
         }
 
         $pdo = Mysql::connection();
+        if (!$this->tableExists($pdo, 'drivers')) {
+            return [
+                'http_status' => 503,
+                'payload' => ['status' => 'error', 'message' => 'Drivers table missing in database']
+            ];
+        }
         if ($driverIdRaw !== '') {
             $driverDbId = $this->parseEntityId($driverIdRaw);
             if ($driverDbId === null) {
@@ -1146,26 +1168,38 @@ class AdminController
     private function renderOverviewPage(): void
     {
         $pdo = Mysql::connection();
+        $hasDriversTable = $this->tableExists($pdo, 'drivers');
+        $hasRidesTable = $this->tableExists($pdo, 'rides');
         $customerTotal = 0;
         if ($this->tableExists($pdo, 'customers')) {
             $customerTotal = (int)($pdo->query('SELECT COUNT(*) FROM customers')->fetchColumn() ?: 0);
         } elseif ($this->tableExists($pdo, 'users')) {
             $customerTotal = (int)($pdo->query('SELECT COUNT(*) FROM users')->fetchColumn() ?: 0);
         }
-        $driverTotal = (int)($pdo->query('SELECT COUNT(*) FROM drivers')->fetchColumn() ?: 0);
-        $rideTotal = (int)($pdo->query('SELECT COUNT(*) FROM rides')->fetchColumn() ?: 0);
+        $driverTotal = $hasDriversTable
+            ? (int)($pdo->query('SELECT COUNT(*) FROM drivers')->fetchColumn() ?: 0)
+            : 0;
+        $rideTotal = $hasRidesTable
+            ? (int)($pdo->query('SELECT COUNT(*) FROM rides')->fetchColumn() ?: 0)
+            : 0;
         $pendingVerification = 0;
-        if ($this->columnExists($pdo, 'drivers', 'verification_status')) {
+        if ($hasDriversTable && $this->columnExists($pdo, 'drivers', 'verification_status')) {
             $pendingVerification = (int)($pdo->query('SELECT COUNT(*) FROM drivers WHERE verification_status = "pending"')->fetchColumn() ?: 0);
         }
 
-        $this->renderAdminPage('Overview', function () use ($customerTotal, $driverTotal, $rideTotal, $pendingVerification): void {
+        $this->renderAdminPage('Overview', function () use ($customerTotal, $driverTotal, $rideTotal, $pendingVerification, $hasDriversTable, $hasRidesTable): void {
             echo '<div class="wrap">';
             echo '<h2>Platform Snapshot</h2>';
             echo '<div class="stat">Customers: ' . $customerTotal . '</div>';
             echo '<div class="stat">Drivers: ' . $driverTotal . '</div>';
             echo '<div class="stat">Total Rides: ' . $rideTotal . '</div>';
             echo '<div class="stat">Pending Verification: ' . $pendingVerification . '</div>';
+            if (!$hasDriversTable) {
+                echo '<p style="margin-top:12px;color:#fbbf24;">Warning: `drivers` table is missing in this database. Run the latest schema SQL on Railway MySQL.</p>';
+            }
+            if (!$hasRidesTable) {
+                echo '<p style="margin-top:8px;color:#fbbf24;">Warning: `rides` table is missing in this database. Run the latest schema SQL on Railway MySQL.</p>';
+            }
             echo '<p style="margin-top:14px;color:#9ca3af;">Use top menu for page-wise modules.</p>';
             echo '</div>';
         });
@@ -1206,6 +1240,21 @@ class AdminController
     private function renderRidesPage(): void
     {
         $pdo = Mysql::connection();
+        $hasRidesTable = $this->tableExists($pdo, 'rides');
+        $hasDriversTable = $this->tableExists($pdo, 'drivers');
+        $rides = [];
+        $driverMarkers = [];
+        $rideMarkers = [];
+
+        if (!$hasRidesTable) {
+            $this->renderAdminPage('Rides', function (): void {
+                echo '<div class="wrap"><h2>Rides (Latest 100)</h2>';
+                echo '<p style="color:#fbbf24;">`rides` table is missing in this database. Run the latest schema SQL on Railway MySQL.</p>';
+                echo '</div>';
+            });
+            return;
+        }
+
         $rideSelect = [
             'r.id',
             'r.status',
@@ -1225,9 +1274,14 @@ class AdminController
             $this->selectExprFrom($pdo, 'drivers', ['current_lat', 'latitude'], 'driver_lat', 'd', 'NULL'),
             $this->selectExprFrom($pdo, 'drivers', ['current_lng', 'longitude'], 'driver_lng', 'd', 'NULL')
         ];
-        $rides = $pdo->query('SELECT ' . implode(', ', $rideSelect) . ' FROM rides r LEFT JOIN drivers d ON r.driver_id = d.id ORDER BY r.created_at DESC LIMIT 100')->fetchAll(\PDO::FETCH_ASSOC);
-        $driverMarkers = [];
-        $rideMarkers = [];
+        $ridesSql = 'SELECT ' . implode(', ', $rideSelect) . ' FROM rides r';
+        if ($hasDriversTable) {
+            $ridesSql .= ' LEFT JOIN drivers d ON r.driver_id = d.id';
+        }
+        $ridesSql .= ' ORDER BY '
+            . ($this->columnExists($pdo, 'rides', 'created_at') ? 'r.created_at' : 'r.id')
+            . ' DESC LIMIT 100';
+        $rides = $pdo->query($ridesSql)->fetchAll(\PDO::FETCH_ASSOC);
         foreach ($rides as $r) {
             $status = $this->normalizeRideStatusForAdmin($r);
             if (is_numeric($r['driver_lat'] ?? null) && is_numeric($r['driver_lng'] ?? null)) {
@@ -1248,8 +1302,11 @@ class AdminController
             }
         }
 
-        $this->renderAdminPage('Rides', function () use ($rides, $driverMarkers, $rideMarkers): void {
+        $this->renderAdminPage('Rides', function () use ($rides, $driverMarkers, $rideMarkers, $hasDriversTable): void {
             echo '<div class="wrap"><h2>Rides (Latest 100)</h2>';
+            if (!$hasDriversTable) {
+                echo '<p style="margin:6px 0 12px;color:#fbbf24;">`drivers` table missing. Ride list is shown without driver details.</p>';
+            }
             echo '<div style="display:flex;justify-content:flex-end;gap:8px;margin:0 0 10px 0;">';
             echo '<form method="POST" action="/admin/ride-delete-all" onsubmit="return confirm(\'Are you sure you want to delete ALL rides?\');">';
             echo '<button class="btn btn-reject" type="submit">Delete All Rides</button>';
@@ -1292,19 +1349,28 @@ class AdminController
     private function renderDriversPage(): void
     {
         $pdo = Mysql::connection();
-        $driverRows = $pdo->query(
-            'SELECT id, '
-            . $this->selectExpr($pdo, 'drivers', ['name', 'full_name'], 'name', "''") . ', '
-            . $this->selectExpr($pdo, 'drivers', ['phone'], 'phone', "''") . ', '
-            . $this->selectExpr($pdo, 'drivers', ['rating'], 'rating', '0') . ', '
-            . $this->selectExpr($pdo, 'drivers', ['total_rides'], 'total_rides', '0') . ', '
-            . $this->selectExpr($pdo, 'drivers', ['is_blocked'], 'is_blocked', '0') . ', '
-            . $this->selectExpr($pdo, 'drivers', ['is_verified'], 'is_verified', '1')
-            . ' FROM drivers ORDER BY ' . ($this->columnExists($pdo, 'drivers', 'created_at') ? 'created_at' : 'id') . ' DESC LIMIT 100'
-        )->fetchAll(\PDO::FETCH_ASSOC);
+        $hasDriversTable = $this->tableExists($pdo, 'drivers');
+        $driverRows = [];
+        if ($hasDriversTable) {
+            $driverRows = $pdo->query(
+                'SELECT id, '
+                . $this->selectExpr($pdo, 'drivers', ['name', 'full_name'], 'name', "''") . ', '
+                . $this->selectExpr($pdo, 'drivers', ['phone'], 'phone', "''") . ', '
+                . $this->selectExpr($pdo, 'drivers', ['rating'], 'rating', '0') . ', '
+                . $this->selectExpr($pdo, 'drivers', ['total_rides'], 'total_rides', '0') . ', '
+                . $this->selectExpr($pdo, 'drivers', ['is_blocked'], 'is_blocked', '0') . ', '
+                . $this->selectExpr($pdo, 'drivers', ['is_verified'], 'is_verified', '1')
+                . ' FROM drivers ORDER BY ' . ($this->columnExists($pdo, 'drivers', 'created_at') ? 'created_at' : 'id') . ' DESC LIMIT 100'
+            )->fetchAll(\PDO::FETCH_ASSOC);
+        }
 
-        $this->renderAdminPage('Drivers', function () use ($driverRows): void {
+        $this->renderAdminPage('Drivers', function () use ($driverRows, $hasDriversTable): void {
             echo '<div class="wrap"><h2>Driver Management</h2>';
+            if (!$hasDriversTable) {
+                echo '<p style="color:#fbbf24;">`drivers` table is missing in this database. Run the latest schema SQL on Railway MySQL.</p>';
+                echo '</div>';
+                return;
+            }
             echo '<table><tr><th>Name</th><th>Phone</th><th>Rating</th><th>Total Rides</th><th>Verified</th><th>Blocked</th><th>Action</th></tr>';
             foreach ($driverRows as $d) {
                 $idVal = $this->idToString($d['id'] ?? null);
@@ -1324,8 +1390,9 @@ class AdminController
     private function renderVerificationPage(): void
     {
         $pdo = Mysql::connection();
+        $hasDriversTable = $this->tableExists($pdo, 'drivers');
         $pendingDrivers = [];
-        if ($this->columnExists($pdo, 'drivers', 'verification_status')) {
+        if ($hasDriversTable && $this->columnExists($pdo, 'drivers', 'verification_status')) {
             $pendingDrivers = $pdo->query(
                 'SELECT id, '
                 . $this->selectExpr($pdo, 'drivers', ['name', 'full_name'], 'name', "''") . ', '
@@ -1343,8 +1410,13 @@ class AdminController
             )->fetchAll(\PDO::FETCH_ASSOC);
         }
 
-        $this->renderAdminPage('Verification', function () use ($pendingDrivers): void {
+        $this->renderAdminPage('Verification', function () use ($pendingDrivers, $hasDriversTable): void {
             echo '<div class="wrap"><h2>Pending Driver Verification</h2>';
+            if (!$hasDriversTable) {
+                echo '<p style="color:#fbbf24;">`drivers` table is missing in this database. Run the latest schema SQL on Railway MySQL.</p>';
+                echo '</div>';
+                return;
+            }
             if (count($pendingDrivers) === 0) {
                 echo '<p>No pending drivers.</p>';
                 echo '</div>';
@@ -1457,6 +1529,12 @@ class AdminController
         if ($rideActionStatus !== '') {
             $color = $rideActionStatus === 'ok' ? '#22c55e' : '#ef4444';
             echo '<div class="wrap"><div style="margin:8px 0 12px;padding:10px;border:1px solid ' . $color . ';border-radius:8px;"><strong>Ride Action: ' . htmlspecialchars(strtoupper($rideActionStatus)) . '</strong>' . ($rideMsg !== '' ? (' | ' . htmlspecialchars($rideMsg)) : '') . '</div></div>';
+        }
+        $driverActionStatus = (string)($_GET['driver_status'] ?? '');
+        $driverMsg = (string)($_GET['driver_msg'] ?? '');
+        if ($driverActionStatus !== '') {
+            $color = $driverActionStatus === 'ok' ? '#22c55e' : '#ef4444';
+            echo '<div class="wrap"><div style="margin:8px 0 12px;padding:10px;border:1px solid ' . $color . ';border-radius:8px;"><strong>Driver Action: ' . htmlspecialchars(strtoupper($driverActionStatus)) . '</strong>' . ($driverMsg !== '' ? (' | ' . htmlspecialchars($driverMsg)) : '') . '</div></div>';
         }
     }
 
