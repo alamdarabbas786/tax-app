@@ -48,16 +48,18 @@ final class PaymentGatewayController
         }
 
         try {
+            $rideIdText = $this->normalizeIdToString($ride['id']);
+            $receipt = $this->buildRazorpayIdentifier('ride', $rideIdText, 40);
             $order = $service->createOrder(
                 $amount,
                 $currency,
-                'ride_' . $this->normalizeIdToString($ride['id']),
-                ['ride_id' => $this->normalizeIdToString($ride['id'])]
+                $receipt,
+                ['ride_id' => $rideIdText]
             );
             $this->ensureGatewayPaymentsTable($pdo);
             $this->insertGatewayPayment(
                 $pdo,
-                $this->normalizeIdToString($ride['id']),
+                $rideIdText,
                 $this->normalizeIdToString($ride['customer_id'] ?? $auth['subject_id']),
                 $amount,
                 $currency,
@@ -118,18 +120,20 @@ final class PaymentGatewayController
         }
 
         try {
+            $rideIdText = $this->normalizeIdToString($ride['id']);
+            $referenceId = $this->buildRazorpayIdentifier('ride', $rideIdText, 40);
             $customer = $this->fetchCustomerContact($pdo, $ride['customer_id'] ?? $auth['subject_id']);
             $link = $service->createPaymentLink(
                 $amount,
                 $currency,
-                'ride_' . $this->normalizeIdToString($ride['id']),
+                $referenceId,
                 $description,
                 $customer
             );
             $this->ensureGatewayPaymentsTable($pdo);
             $this->insertGatewayPayment(
                 $pdo,
-                $this->normalizeIdToString($ride['id']),
+                $rideIdText,
                 $this->normalizeIdToString($ride['customer_id'] ?? $auth['subject_id']),
                 $amount,
                 $currency,
@@ -524,6 +528,26 @@ final class PaymentGatewayController
             return Uuid::toString($id);
         }
         return trim((string)$id);
+    }
+
+    private function buildRazorpayIdentifier(string $prefix, string $rawId, int $maxLength = 40): string
+    {
+        $safePrefix = preg_replace('/[^A-Za-z0-9_.-]/', '', trim($prefix)) ?: 'ref';
+        $safeRaw = preg_replace('/[^A-Za-z0-9_.-]/', '', str_replace('-', '', trim($rawId))) ?: 'unknown';
+        $base = $safePrefix . '_' . $safeRaw;
+
+        if (strlen($base) <= $maxLength) {
+            return $base;
+        }
+
+        $hash = substr(sha1($safeRaw), 0, 8);
+        $available = $maxLength - strlen($safePrefix) - 1 - 1 - strlen($hash);
+        if ($available < 1) {
+            $available = 1;
+        }
+        $trimmed = substr($safeRaw, 0, $available);
+
+        return $safePrefix . '_' . $trimmed . '_' . $hash;
     }
 
     private function toRideId(string $rideId)
