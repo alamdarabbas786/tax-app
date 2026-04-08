@@ -11,7 +11,7 @@ object ApiClient {
     private val client = OkHttpClient.Builder().build()
 
     // Replace with your backend base URL.
-    private const val BASE_URL = "https://tax-app-production-3500.up.railway.app/api"
+    private const val BASE_URL = "https://tax-app-production-3df5.up.railway.app/api"
 
     fun getRideStatus(rideId: String, callback: Callback) {
         val request = Request.Builder()
