@@ -15,7 +15,8 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
   && composer install --no-interaction --no-progress --prefer-dist
 
 COPY . /app
+RUN chmod +x /app/start.sh
 
 EXPOSE 3000
-CMD ["sh", "-lc", "php -S 0.0.0.0:${PORT:-3000} -t public public/router.php"]
+CMD ["./start.sh"]
 
