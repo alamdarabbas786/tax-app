@@ -17,7 +17,7 @@ function redis_client(): ?Client
         return null;
     }
 
-    $url = env_value('REDIS_URL', '');
+    $url = redis_resolve_url();
     if ($url === '' || !class_exists(Client::class)) {
         $client = null;
         return null;
@@ -31,6 +31,180 @@ function redis_client(): ?Client
         $client = null;
         return null;
     }
+}
+
+function redis_resolve_url(): string
+{
+    $url = trim((string) redis_first_non_empty([
+        env_value('REDIS_URL', ''),
+        env_value('REDIS_PRIVATE_URL', ''),
+        env_value('REDIS_PUBLIC_URL', ''),
+    ]));
+
+    $host = redis_normalize_host(redis_first_non_empty([
+        env_value('REDIS_HOST', ''),
+        env_value('REDISHOST', ''),
+        env_value('REDIS_HOSTNAME', ''),
+    ]));
+
+    $port = redis_normalize_port(redis_first_non_empty([
+        env_value('REDIS_PORT', ''),
+        env_value('REDISPORT', ''),
+        '6379',
+    ]));
+
+    $username = redis_first_non_empty([
+        env_value('REDIS_USER', ''),
+        env_value('REDISUSER', ''),
+    ]);
+
+    $password = redis_first_non_empty([
+        env_value('REDIS_PASSWORD', ''),
+        env_value('REDISPASSWORD', ''),
+    ]);
+
+    if ($url !== '' && !str_contains($url, '://')) {
+        if ($host === null) {
+            [$splitHost, $splitPort] = redis_split_host_port($url);
+            $host = $splitHost;
+            if ($splitPort !== null) {
+                $port = $splitPort;
+            }
+        }
+        $url = '';
+    }
+
+    $hasLocalhostUrl = redis_url_is_localhost($url);
+    $urlMissingHost = $url !== '' && !redis_url_has_host($url);
+
+    if (($url === '' || $hasLocalhostUrl || $urlMissingHost) && $host !== null) {
+        $url = redis_build_url($host, $port, $username, $password);
+    }
+
+    return $url;
+}
+
+function redis_first_non_empty(array $values): ?string
+{
+    foreach ($values as $value) {
+        $trimmed = trim((string) $value);
+        if ($trimmed !== '') {
+            return $trimmed;
+        }
+    }
+
+    return null;
+}
+
+function redis_normalize_host(?string $host): ?string
+{
+    if ($host === null) {
+        return null;
+    }
+
+    $host = trim($host);
+    if ($host === '') {
+        return null;
+    }
+
+    if (str_contains($host, '://')) {
+        $parts = parse_url($host);
+        if ($parts !== false && isset($parts['host']) && is_string($parts['host'])) {
+            $host = trim($parts['host']);
+        } elseif ($parts !== false && isset($parts['path']) && is_string($parts['path'])) {
+            $host = trim($parts['path'], '/');
+        }
+    }
+
+    if ($host === '') {
+        return null;
+    }
+
+    [$splitHost] = redis_split_host_port($host);
+    return $splitHost;
+}
+
+function redis_normalize_port(?string $port): string
+{
+    $port = trim((string) $port);
+    if ($port === '' || !ctype_digit($port)) {
+        return '6379';
+    }
+
+    return $port;
+}
+
+function redis_split_host_port(string $value): array
+{
+    $value = trim($value);
+    if ($value === '') {
+        return [null, null];
+    }
+
+    if (preg_match('/^\[([^\]]+)\](?::([0-9]+))?$/', $value, $matches) === 1) {
+        $host = trim((string) $matches[1]);
+        $port = isset($matches[2]) ? trim((string) $matches[2]) : null;
+        return [$host !== '' ? $host : null, $port !== '' ? $port : null];
+    }
+
+    if (preg_match('/^([^:\/]+):([0-9]+)$/', $value, $matches) === 1) {
+        $host = trim((string) $matches[1]);
+        $port = trim((string) $matches[2]);
+        return [$host !== '' ? $host : null, $port !== '' ? $port : null];
+    }
+
+    return [$value, null];
+}
+
+function redis_build_url(string $host, string $port, ?string $username, ?string $password): string
+{
+    $user = trim((string) $username);
+    $pass = trim((string) $password);
+    $auth = '';
+
+    if ($user !== '' && $pass !== '') {
+        $auth = rawurlencode($user) . ':' . rawurlencode($pass) . '@';
+    } elseif ($user !== '') {
+        $auth = rawurlencode($user) . '@';
+    } elseif ($pass !== '') {
+        $auth = ':' . rawurlencode($pass) . '@';
+    }
+
+    return sprintf('redis://%s%s:%s', $auth, $host, $port);
+}
+
+function redis_url_is_localhost(string $url): bool
+{
+    if ($url === '') {
+        return false;
+    }
+
+    $parts = parse_url($url);
+    if ($parts === false) {
+        return true;
+    }
+
+    $host = strtolower(trim((string) ($parts['host'] ?? '')));
+    if ($host === '') {
+        return true;
+    }
+
+    return in_array($host, ['127.0.0.1', 'localhost', '::1'], true);
+}
+
+function redis_url_has_host(string $url): bool
+{
+    if ($url === '') {
+        return false;
+    }
+
+    $parts = parse_url($url);
+    if ($parts === false) {
+        return false;
+    }
+
+    $host = trim((string) ($parts['host'] ?? ''));
+    return $host !== '';
 }
 
 function redis_driver_geo_key(): string
